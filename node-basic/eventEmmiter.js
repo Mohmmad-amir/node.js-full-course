@@ -1,3 +1,6 @@
+// chapter 4 event emitter
+
+
 const logEvent = require('./logEvent');
 
 const EventEmitter = require('events');
