@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 //common code modules
 const http = require('http');
 const Path = require('path');
@@ -115,4 +114,3 @@ const app = http.createServer((req, res) => {
 
 
 app.listen(PORT, () => console.log(`app is running on ${PORT}`))
->>>>>>> ee11e26a020cd41272dc82ffce5d2a2d0c4aa85a
