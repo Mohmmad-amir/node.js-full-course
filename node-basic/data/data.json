@@ -1,0 +1,16 @@
+{
+    "data":{
+        
+        "usersID":"1",
+        "userName":"mohmmad-amir",
+        "email":"mohmmad@example.com",
+        "title":"Web developer",
+        "address":{
+            "village":"Rajpara",
+            "thana":"Rajpara",
+            "post_office":"Rajshahi-court",
+            "district":"rajshahi"
+        },
+        "Hobbies":["code","eat","sleep"]
+    }
+}
