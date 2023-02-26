@@ -1,6 +1,9 @@
 {
   "dependencies": {
-    "express": "^4.18.2"
+    "cors": "^2.8.5",
+    "date-fns": "^2.29.3",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
@@ -10,7 +13,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node --watch app.js"
+    "start": "node --watch app.js"
   },
   "keywords": [],
   "author": "",
