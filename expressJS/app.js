@@ -40,43 +40,40 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json());
 
 //* serve static files
-app.use(express.static(PATH.join(__dirname, '/public')))
+app.use('/', express.static(PATH.join(__dirname, '/public')))
+app.use('/subdir', express.static(PATH.join(__dirname, '/public')))
 
-//* routes
-app.get('^/$|/index(.html)?', (req, res) => {
-    // res.sendFile('./views/index.html', { root: __dirname });
-    res.sendFile(PATH.join(__dirname, 'views', 'index.html'));
-});
 
-app.get('/new-page(.html)?', (req, res) => {
-    res.sendFile(PATH.join(__dirname, 'views', 'new-page.html'));
-});
-app.get('/old-page(.html)?', (req, res) => {
-    res.redirect(301, '/new-page.html'); //302 by default
-});
+
+// * routes
+app.use('/', require('./routes/root'))
+app.use('/subdir', require('./routes/subdir-routes'))
+app.use('/employees', require('./routes/api/employees'))
+
+
 // route handlers
-app.get('/hello(.html)?', (req, res, next) => {
-    console.log('attempted to load hello.html');
-    next()
-}, (req, res) => {
-    res.send("hello world")
-})
+// app.get('/hello(.html)?', (req, res, next) => {
+//     console.log('attempted to load hello.html');
+//     next()
+// }, (req, res) => {
+//     res.send("hello world")
+// })
 
 //chaining route handlers
-const one = (req, res, next) => {
-    console.log('one');
-    next()
-}
-const two = (req, res, next) => {
-    console.log('Two');
-    next()
-}
-const three = (req, res, next) => {
-    console.log('Three');
-    res.send('Finished')
-}
+// const one = (req, res, next) => {
+//     console.log('one');
+//     next()
+// }
+// const two = (req, res, next) => {
+//     console.log('Two');
+//     next()
+// }
+// const three = (req, res, next) => {
+//     console.log('Three');
+//     res.send('Finished')
+// }
 
-app.get('/chain(.html)?', [one, two, three],)
+// app.get('/chain(.html)?', [one, two, three],)
 
 //app.use('/)
 
@@ -95,12 +92,7 @@ app.all('*', (req, res) => {
 })
 
 // * custom error handlers
-
 app.use(errorHandler)
 
-
-
-
-
-
+// * listen function
 app.listen(PORT, () => console.log(`Application running on port : ${PORT}`))
