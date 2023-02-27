@@ -13,7 +13,9 @@ const handleNewUser = async (req, res) => {
     });
     // check for duplicate username is the db
     const duplicate = usersDB.users.find(person => person.username === user);
-    if (duplicate) return res.sendStatus(409); // conflict
+    if (duplicate) return res.status(409).json({
+        'message': `user ${user} already exists`
+    }); // conflict
     try {
         //encrypt the password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -24,8 +26,8 @@ const handleNewUser = async (req, res) => {
             path.join(__dirname, '..', 'models', 'users.json'),
             JSON.stringify(usersDB.users)
         );
-        console.log(usersDB.users);
         res.status(201).json({ 'success': `New user ${user} created..!` })
+        console.log(usersDB.users);
     } catch (err) {
         res.status(500).json({
             'message': err.message
