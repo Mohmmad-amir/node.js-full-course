@@ -4,6 +4,7 @@ const PATH = require('path');
 const cors = require('cors');
 const { logger } = require('./middleware/logEvent');
 const errorHandler = require('./middleware/errorHandler');
+const { verifyJWT } = require('./middleware/verifyJWT')
 const PORT = process.env.PORT || 3500
 const corsOption = require('./config/corsOptions')
 //* custom middleware logger()
@@ -27,6 +28,8 @@ app.use('/', express.static(PATH.join(__dirname, '/public')))
 app.use('/', require('./routes/root'))
 app.use('/register', require('./routes/register'))
 app.use('/auth', require('./routes/auth'))
+// verify jwt auth
+app.use(verifyJWT);
 app.use('/employees', require('./routes/api/employees'))
 
 

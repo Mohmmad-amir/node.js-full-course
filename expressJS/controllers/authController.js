@@ -4,7 +4,7 @@ const usersDB = {
 }
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-require('dotenv').config;
+require('dotenv').config();
 const fsPromises = require('fs').promises;
 const path = require('path');
 
@@ -39,7 +39,7 @@ const handleLogin = async (req, res) => {
             path.join(__dirname, '..', 'models', 'users.json'),
             JSON.stringify(usersDB.users)
         );
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
         res.json({ accessToken })
     } else {
         res.status(401).json({
