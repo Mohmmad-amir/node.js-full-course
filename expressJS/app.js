@@ -5,11 +5,14 @@ const cors = require('cors');/*  cors */
 const { logger } = require('./middleware/logEvent');/*  logger middleware */
 const errorHandler = require('./middleware/errorHandler');/*  errorHandler middleware */
 const { verifyJWT } = require('./middleware/verifyJWT')/*  verifyJWT middleware */
-var cookieParser = require('cookie-parser');/*cookie parser*/
+const credentials = require('./middleware/credentials')
+const cookieParser = require('cookie-parser');/*cookie parser*/
 const PORT = process.env.PORT || 3500/* port* */
 const corsOption = require('./config/corsOptions')/*cors options*/
 //* custom middleware logger()
 app.use(logger);
+//* credential middleware
+app.use(credentials)
 // * core option
 app.use(cors(corsOption))
 
@@ -33,6 +36,8 @@ app.use('/', require('./routes/root'))
 app.use('/register', require('./routes/register'))
 app.use('/auth', require('./routes/auth'))
 app.use('/refresh', require('./routes/refresh'))
+app.use('/logout', require('./routes/logout'))
+
 
 // verify jwt auth
 app.use(verifyJWT);

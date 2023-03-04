@@ -5,7 +5,7 @@ const usersDB = {
 const fsPromises = require('fs').promises;
 const path = require('path');
 
-const handleLogout = (req, res) => {
+const handleLogout = async (req, res) => {
     // on client, also delete accessToken
 
     const cookies = req.cookies;
@@ -14,17 +14,21 @@ const handleLogout = (req, res) => {
 
     const foundUser = usersDB.users.find(person => person.refreshToken === newRefreshToken);
     if (!foundUser) {
-        res.clearCookies('jwt', {
-            httpOnly: true
-        })
+        res.clearCookies('jwt', { httpOnly: true, secure: true, sameSite: 'None' })
         return res.sendStatus(204);// forbidden
     }
     // delete refreshToken
     const otherUsers = usersDB.users.filter(person => person.refreshToken !== foundUser.refreshToken);
-
-
+    const currentUser = { ...foundUser, newRefreshToken: "" }
+    usersDB.setUsers([...otherUsers, foundUser])
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'users.json'),
+        JSON.stringify(usersDB.users)
+    )
+    res.clearCookies('jwt', { httpOnly: true, secure: true, sameSite: 'None' }); // secure
+    res.sendStatus(204);
 }
 
 module.exports = {
-    handleRefreshToken
+    handleLogout
 }
