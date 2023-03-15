@@ -1,7 +1,6 @@
 const User = require('../models/User')
 
 const bcrypt = require('bcrypt');
-
 const jwt = require('jsonwebtoken');
 
 
@@ -33,14 +32,10 @@ const handleLogin = async (req, res) => {
             { expiresIn: '1d' }
         );
         // Saving refreshToken with current user
-        const otherUsers = usersDB.users.filter(person => person.username !== foundUser.username);
-        const currentUser = { ...foundUser, refreshToken };
-        usersDB.setUsers([...otherUsers, currentUser]);
-        await fsPromises.writeFile(
-            path.join(__dirname, '..', 'models', 'users.json'),
-            JSON.stringify(usersDB.users)
-        );
-        res.cookie('token', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+        foundUser.refreshToken = refreshToken;
+        const result = await foundUser.save();
+        console.log(result);
+        res.cookie('token', refreshToken, { httpOnly: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }); /*In production use secure:true*/
         res.json({ accessToken });
     } else {
         res.sendStatus(401);

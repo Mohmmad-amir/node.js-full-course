@@ -1,91 +1,79 @@
 const { v4: uuid } = require('uuid')
-const data = {
-    employees: require('../models/employees.json'),
-    setEmployees: function (data) { this.employees = data }
-};
+const Employee = require('../models/Employees')
 
 // * index function
-const index = (req, res) => {
-    res.json(data.employees)
+const index = async (req, res) => {
+    const employees = await Employee.find();
+    if (!employees) return res.status(204).json({ 'message': 'No Employees Found!' })
+    res.json(employees)
 }
 
 //* show function
-const show = (req, res) => {
-    const employee = data.employees.find(emp => emp.id === parseInt(req.body.id));
+const show = async (req, res) => {
+    if (!req?.params?.id) {
+        return res.status(400).json({ 'message': 'ID parameter is required' });
+    }
+    const employee = await Employee.findOne({ _id: req.params.id }).exec();
     if (!employee) {
-        return res.status(400).json({
-            "message": `Employee ID : ${req.body.id} not found`
+        return res.status(204).json({
+            "message": `No Employee Matches ID : ${req.body.id}`
         });
     };
     res.json(employee)
-    // res.json({
-    //     "id": req.params.id
-    // });
 }
 
 //* store function
-const store = (req, res) => {
+const store = async (req, res) => {
 
-    const newEmployee = {
-        id: data.employees[data.employees.length - 1].id + 1 || 1,
-        // id: uuid,
-        userName: req.body.userName,
-        email: req.body.email,
-        title: req.body.title,
+    if (!req?.body?.firstName || !req?.body?.lastName) {
+        return res.status(400).json({ 'message': 'firstname and lastname are required' });
     }
-    if (!newEmployee.userName || !newEmployee.email) {
-        return res.status(400).json({
-            'message': "userName & Email are required..!"
+
+    try {
+        const result = await Employee.create({
+            firstname: req.body.firstName,
+            lastname: req.body.lastName
         })
+        res.status(201).json(result);
+    } catch (err) {
+        console.error(err);
     }
-    data.setEmployees([...data.employees, newEmployee]);
-    res.status(201).json(
-        data.employees
-        /*
-        {
-        "id": uuid,
-        "userName": req.body.userName,
-        "email": req.body.email,
-        "title": req.body.title,
-    }
-    */
-    );
+
 }
 
 // * update function
-const update = (req, res) => {
+const update = async (req, res) => {
+    if (!req?.body?.id) {
+        return res.status(400).json({ 'message': 'ID parameter is required' });
+    }
 
-    const employee = data.employees.find(emp => emp.id === parseInt(req.body.id));
+    const employee = await Employee.findOne({ _id: req.body.id }).exec()
+
     if (!employee) {
-        return res.status(400).json({
-            "message": `Employee ID : ${req.body.id} not found`
+        return res.status(204).json({
+            "message": `No Employee Matches ID : ${req.body.id}`
         });
     };
-    if (req.body.userName) employee.userName = req.body.userName;
-    if (req.body.email) employee.email = req.body.email;
-    const filteredArray = data.employees.filter(emp => emp.id !== parseInt(req.body.id));
-    const unsortedArray = [...filteredArray, employee];
-    data.setEmployees(unsortedArray.sort((a, b) => a.id > b.id ? 1 : a.id < b.id ? -1 : 0));
-    res.json(data.employees);
-    // res.json({
-    //     "userName": req.body.userName,
-    //     "email": req.body.email,
-    //     "title": req.body.title,
-    // });
+    if (req.body?.firstname) employee.firstname = req.body.firstname;
+    if (req.body?.lastname) employee.lastname = req.body.lastname;
+    const result = await employee.save();
+    res.json(result);
 }
 
 // * destroy function
-const destroy = (req, res) => {
-    const employee = data.employees.find(emp => emp.id === parseInt(req.body.id));
+const destroy = async (req, res) => {
+    if (!req?.body?.id) {
+        return res.status(400).json({ 'message': 'ID parameter is required' });
+    }
+
+    const employee = await Employee.findOne({ _id: req.body.id }).exec();
     if (!employee) {
-        return res.status(400).json({
-            "message": `Employee ID : ${req.body.id} not found`
+        return res.status(204).json({
+            "message": `No Employee Matches ID : ${req.body.id}`
         });
     };
-    const filteredArray = data.employees.filter(emp => emp.id !== parseInt(req.body.id));
-    data.setEmployees([...filteredArray]);
-    res.json(data.employees);
-    // res.json({ "id": req.body.id })
+    const result = await employee.deleteOne({ _id: req.body.id })
+    res.json(result);
 }
 
 module.exports = {
