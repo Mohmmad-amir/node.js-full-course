@@ -1,20 +1,17 @@
-const usersDB = {
-    users: require('../models/users.json'),
-    setUsers: function (data) { this.users = data }
-}
+const User = require('../models/User')
+
 const bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
-const fsPromises = require('fs').promises;
-const path = require('path');
+
 
 const handleLogin = async (req, res) => {
-    const { user, pwd } = req.body;
-    if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
-    const foundUser = usersDB.users.find(person => person.username === user);
+    const { user, password } = req.body;
+    if (!user || !password) return res.status(400).json({ 'message': 'Username and password are required.' });
+    const foundUser = await User.findOne({ username: user }).exec()
     if (!foundUser) return res.sendStatus(401); //Unauthorized
     // evaluate password
-    const match = await bcrypt.compare(pwd, foundUser.password);
+    const match = await bcrypt.compare(password, foundUser.password);
     if (match) {
 
         const roles = Object.values(foundUser.roles);
